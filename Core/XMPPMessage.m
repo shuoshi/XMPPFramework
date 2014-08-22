@@ -226,6 +226,12 @@
     [self addChild:threadElement];
 }
 
+//modified by css
+- (BOOL)isNormalMessage
+{
+   return [[[self attributeForName:@"type"] stringValue] isEqualToString:@"normal"];
+}
+
 - (BOOL)isChatMessage
 {
 	return [[[self attributeForName:@"type"] stringValue] isEqualToString:@"chat"];
