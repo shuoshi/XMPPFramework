@@ -45,6 +45,8 @@
 - (void)addBody:(NSString *)body withLanguage:(NSString *)language;
 - (void)addThread:(NSString *)thread;
 
+//modified by css
+- (BOOL)isNormalMessage;
 - (BOOL)isChatMessage;
 - (BOOL)isChatMessageWithBody;
 - (BOOL)isErrorMessage;
