@@ -3295,9 +3295,9 @@ enum XMPPStreamConfig
     {
 		if (myJID_setByClient)
 		{
-			temp = @"<stream:stream xmlns='%@' xmlns:stream='%@' version='1.0' to='%@'>";
+            temp = @"<stream:stream xmlns='%@' xmlns:stream='%@' version='1.0' to='%@' starttls='go'>";
             s2 = [NSString stringWithFormat:temp, xmlns, xmlns_stream, [myJID_setByClient domain]];
-		}
+        }
         else if ([hostName length] > 0)
         {
             temp = @"<stream:stream xmlns='%@' xmlns:stream='%@' version='1.0' to='%@'>";
@@ -3415,7 +3415,7 @@ enum XMPPStreamConfig
 		if ([self didStartNegotiation])
 		{
 			// Now we start our negotiation over again...
-			[self sendOpeningNegotiation];
+			//[self sendOpeningNegotiation];
 			
 			// We paused reading from the socket.
 			// We're ready to continue now.
@@ -4299,6 +4299,9 @@ enum XMPPStreamConfig
 	{
 		[multicastDelegate xmppStreamDidSendClosingStreamStanza:self];
 	}
+    else if (tag == TAG_XMPP_WRITE_START) {
+        [self startTLS];
+    }
 }
 
 /**
