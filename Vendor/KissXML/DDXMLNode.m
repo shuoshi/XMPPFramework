@@ -1196,6 +1196,11 @@ static void MarkDeath(void *xmlPtr, DDXMLNode *wrapper);
 
 - (NSArray *)nodesForXPath:(NSString *)xpath error:(NSError **)error
 {
+    return [self nodesForXPath:xpath ns:nil error:error];
+}
+
+- (NSArray *)nodesForXPath:(NSString *)xpath ns:(NSDictionary *)xmlns error:(NSError **)error
+{
 #if DDXML_DEBUG_MEMORY_ISSUES
 	DDXMLNotZombieAssert();
 #endif
@@ -1242,6 +1247,9 @@ static void MarkDeath(void *xmlPtr, DDXMLNode *wrapper);
 		}
 	}
 	
+    if (xmlns) {
+        xmlXPathRegisterNs(xpathCtx, [[xmlns allKeys][0] xmlChar], [[xmlns allValues][0] xmlChar]);
+    }
 	xpathObj = xmlXPathEvalExpression([xpath xmlChar], xpathCtx);
 	
 	NSArray *result;
@@ -1289,7 +1297,7 @@ static void MarkDeath(void *xmlPtr, DDXMLNode *wrapper);
 		[[self class] recursiveStripDocPointersFromNode:(xmlNodePtr)genericPtr];
 	}
 	
-	return result;
+	return result;   
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

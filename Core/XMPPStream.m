@@ -3599,6 +3599,8 @@ enum XMPPStreamConfig
 			state = STATE_XMPP_CONNECTED;
 			
 			[multicastDelegate xmppStreamDidAuthenticate:self];
+            
+            [self startBinding];
 		}
 		
 		// Done with auth

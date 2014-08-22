@@ -48,7 +48,6 @@ enum {
 
 //extern struct _xmlKind;
 
-
 @interface DDXMLNode : NSObject <NSCopying>
 {
 	// Every DDXML object is simply a wrapper around an underlying libxml node
@@ -150,6 +149,7 @@ enum {
 #pragma mark --- XPath/XQuery ---
 
 - (NSArray *)nodesForXPath:(NSString *)xpath error:(NSError **)error;
+- (NSArray *)nodesForXPath:(NSString *)xpath ns:(NSDictionary *)xmlns error:(NSError **)error;
 //- (NSArray *)objectsForXQuery:(NSString *)xquery constants:(NSDictionary *)constants error:(NSError **)error;
 //- (NSArray *)objectsForXQuery:(NSString *)xquery error:(NSError **)error;
 
