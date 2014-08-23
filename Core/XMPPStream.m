@@ -44,6 +44,7 @@
 #define TAG_XMPP_WRITE_STOP         201
 #define TAG_XMPP_WRITE_STREAM       202
 #define TAG_XMPP_WRITE_RECEIPT      203
+#define TAG_XMPP_NEGOTIATION_START  204
 
 // Define the timeouts (in seconds) for SRV
 #define TIMEOUT_SRV_RESOLUTION 30.0
@@ -3317,7 +3318,7 @@ enum XMPPStreamConfig
 	
 	[asyncSocket writeData:outgoingData
 			   withTimeout:TIMEOUT_XMPP_WRITE
-					   tag:TAG_XMPP_WRITE_START];
+					   tag:TAG_XMPP_NEGOTIATION_START];
 	
 	// Update status
 	state = STATE_XMPP_OPENING;
@@ -3351,33 +3352,6 @@ enum XMPPStreamConfig
 	{
 		// Query all interested delegates.
 		// This must be done serially to maintain thread safety.
-		
-		GCDMulticastDelegateEnumerator *delegateEnumerator = [multicastDelegate delegateEnumerator];
-		
-		dispatch_queue_t concurrentQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-		dispatch_async(concurrentQueue, ^{ @autoreleasepool {
-			
-			// Prompt the delegate(s) to populate the security settings
-			
-			id delegate;
-			dispatch_queue_t delegateQueue;
-			
-			while ([delegateEnumerator getNextDelegate:&delegate delegateQueue:&delegateQueue forSelector:selector])
-			{
-				dispatch_sync(delegateQueue, ^{ @autoreleasepool {
-					
-					[delegate xmppStream:self willSecureWithSettings:settings];
-					
-				}});
-			}
-			
-			dispatch_async(xmppQueue, ^{ @autoreleasepool {
-				
-				[self continueStartTLS:settings];
-				
-			}});
-			
-		}});
 	}
 }
 
@@ -3420,6 +3394,7 @@ enum XMPPStreamConfig
 			// We paused reading from the socket.
 			// We're ready to continue now.
 			[asyncSocket readDataWithTimeout:TIMEOUT_XMPP_READ_STREAM tag:TAG_XMPP_READ_STREAM];
+            state = STATE_XMPP_CONNECTED;
 		}
 		else
 		{
@@ -4026,13 +4001,13 @@ enum XMPPStreamConfig
 		// Update state
 		state = STATE_XMPP_START_SESSION;
 	}
-	else
-	{
-		// Revert back to connected state (from binding state)
-		state = STATE_XMPP_CONNECTED;
-		
-		[multicastDelegate xmppStreamDidAuthenticate:self];
-	}
+    else
+    {
+        // Revert back to connected state (from binding state)
+        state = STATE_XMPP_CONNECTED;
+        
+        //[multicastDelegate xmppStreamDidAuthenticate:self];
+    }
 }
 
 - (void)handleStartSessionResponse:(NSXMLElement *)response
@@ -4254,7 +4229,6 @@ enum XMPPStreamConfig
 	
 	// Asynchronously parse the xml data
 	[parser parseData:data];
-	
 	if ([self isSecure])
 	{
 		// Continue reading for XML elements
@@ -4271,6 +4245,32 @@ enum XMPPStreamConfig
 	{
 		// Don't queue up a read on the socket as we may need to upgrade to TLS.
 		// We'll read more data after we've parsed the current chunk of data.
+        NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithCapacity:5];
+        SEL selector = @selector(xmppStream:willSecureWithSettings:);
+        GCDMulticastDelegateEnumerator *delegateEnumerator = [multicastDelegate delegateEnumerator];
+		dispatch_queue_t concurrentQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+		dispatch_async(concurrentQueue, ^{ @autoreleasepool {
+			
+			// Prompt the delegate(s) to populate the security settings
+			
+			id delegate;
+			dispatch_queue_t delegateQueue;
+			
+			while ([delegateEnumerator getNextDelegate:&delegate delegateQueue:&delegateQueue forSelector:selector])
+			{
+				dispatch_sync(delegateQueue, ^{ @autoreleasepool {
+					
+					[delegate xmppStream:self willSecureWithSettings:settings];
+					
+				}});
+			}
+			
+			dispatch_async(xmppQueue, ^{ @autoreleasepool {
+                state = STATE_XMPP_STARTTLS_2;
+				[self continueStartTLS:settings];
+			}});
+			
+		}});
 	}
 }
 
@@ -4301,7 +4301,7 @@ enum XMPPStreamConfig
 	{
 		[multicastDelegate xmppStreamDidSendClosingStreamStanza:self];
 	}
-    else if (tag == TAG_XMPP_WRITE_START) {
+    else if (tag == TAG_XMPP_NEGOTIATION_START) {
         [self startTLS];
     }
 }
@@ -4616,7 +4616,7 @@ enum XMPPStreamConfig
 		}
 		else if (state != STATE_XMPP_STARTTLS_2) // Don't queue read operation prior to [asyncSocket startTLS:]
 		{
-			[asyncSocket readDataWithTimeout:TIMEOUT_XMPP_READ_STREAM tag:TAG_XMPP_READ_STREAM];
+			//[asyncSocket readDataWithTimeout:TIMEOUT_XMPP_READ_STREAM tag:TAG_XMPP_READ_STREAM];
 		}
 	}
 }
