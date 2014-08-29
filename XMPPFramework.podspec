@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
  
   s.subspec 'Core' do |core|
     core.source_files = 'Core/**/*.{h,m}','Vendor/libidn/*.h'
-    core.resource = "Vendor/libidn/libidn.a"
+    core.vendored_libraries = "Vendor/libidn/libidn.a"
     core.libraries = 'xml2','resolv','idn'
     core.xcconfig = { 'HEADER_SEARCH_PATHS' => '$(SDKROOT)/usr/include/libxml2 $(SDKROOT)/usr/include/libresolv',
                       'LIBRARY_SEARCH_PATHS' => '$(PODS_ROOT)/XMPPFramework/Vendor/libidn'}
