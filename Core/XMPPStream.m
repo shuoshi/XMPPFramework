@@ -4504,7 +4504,7 @@ enum XMPPStreamConfig
 		return;
 	}
 	
-	if (state == STATE_XMPP_NEGOTIATING)
+	if (state == STATE_XMPP_NEGOTIATING || state == STATE_XMPP_STARTTLS_2)
 	{
 		// We've just read in the stream features
 		// We consider this part of the root element, so we'll add it (replacing any previously sent features)
