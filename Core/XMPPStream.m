@@ -3386,21 +3386,7 @@ enum XMPPStreamConfig
 		// Note: We don't need to wait for asyncSocket to complete TLS negotiation.
 		// We can just continue reading/writing to the socket, and it will handle queueing everything for us!
 		
-		if ([self didStartNegotiation])
-		{
-			// Now we start our negotiation over again...
-			//[self sendOpeningNegotiation];
-			
-			// We paused reading from the socket.
-			// We're ready to continue now.
-			[asyncSocket readDataWithTimeout:TIMEOUT_XMPP_READ_STREAM tag:TAG_XMPP_READ_STREAM];
-            state = STATE_XMPP_CONNECTED;
-		}
-		else
-		{
-			// First time starting negotiation
-			[self startNegotiation];
-		}
+        [asyncSocket readDataWithTimeout:TIMEOUT_XMPP_READ_STREAM tag:TAG_XMPP_READ_STREAM];
 	}
 }
 
@@ -4209,7 +4195,7 @@ enum XMPPStreamConfig
 	// This method is invoked on the xmppQueue.
 	
 	XMPPLogTrace();
-	
+    state = STATE_XMPP_CONNECTED;
 	[multicastDelegate xmppStreamDidSecure:self];
 }
 
