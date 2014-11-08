@@ -20,7 +20,7 @@
 
 // Log levels: off, error, warn, info, verbose
 #if DEBUG
-  static const int xmppLogLevel = XMPP_LOG_LEVEL_INFO | XMPP_LOG_FLAG_SEND_RECV; // | XMPP_LOG_FLAG_TRACE;
+  static const int xmppLogLevel = XMPP_LOG_LEVEL_INFO | XMPP_LOG_FLAG_SEND_RECV | XMPP_LOG_FLAG_TRACE;
 #else
   static const int xmppLogLevel = XMPP_LOG_LEVEL_WARN;
 #endif
@@ -3296,8 +3296,8 @@ enum XMPPStreamConfig
     {
 		if (myJID_setByClient)
 		{
-            temp = @"<stream:stream xmlns='%@' xmlns:stream='%@' version='1.0' to='%@' starttls='go'>";
-            s2 = [NSString stringWithFormat:temp, xmlns, xmlns_stream, [myJID_setByClient domain]];
+            temp = @"<stream:stream xmlns='%@' xmlns:stream='%@' version='1.0' to='%@' starttls='%@'>";
+            s2 = [NSString stringWithFormat:temp, xmlns, xmlns_stream, [myJID_setByClient domain], self.tag[@"device"]];
         }
         else if ([hostName length] > 0)
         {
@@ -3560,8 +3560,9 @@ enum XMPPStreamConfig
 			state = STATE_XMPP_CONNECTED;
 			
 			[multicastDelegate xmppStreamDidAuthenticate:self];
-            
-            [self startBinding];
+            NSString *fullJIDStr = [authResponse stringValue];
+            [self setMyJID_setByServer:[XMPPJID jidWithString:fullJIDStr]];
+            [self continuePostBinding:NO];
 		}
 		
 		// Done with auth
@@ -3578,7 +3579,12 @@ enum XMPPStreamConfig
 		
 		// Done with auth
 		auth = nil;
-		
+        NSXMLElement *r_redirect = [authResponse elementForName:@"redirect"];
+        NSString *server = [r_redirect stringValue];
+        XMPPLogInfo(@"redirect to: %@", server);
+        [self disconnect];
+        [self setHostName:server];
+        [self connectToHost:[self hostName] onPort:[self hostPort] withTimeout:TIMEOUT_SRV_RESOLUTION error:nil];
 	}
 	else if (result == XMPP_AUTH_CONTINUE)
 	{

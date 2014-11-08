@@ -63,6 +63,8 @@
 	
 	NSXMLElement *auth = [NSXMLElement elementWithName:@"auth" xmlns:@"urn:ietf:params:xml:ns:xmpp-sasl"];
 	[auth addAttributeWithName:@"mechanism" stringValue:@"PLAIN"];
+    
+    [auth addAttributeWithName:@"agent" stringValue:xmppStream.tag[@"ua"]];
 	[auth setStringValue:base64];
 	
 	[xmppStream sendAuthElement:auth];
