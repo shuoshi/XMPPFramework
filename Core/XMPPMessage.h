@@ -46,6 +46,7 @@
 - (void)addThread:(NSString *)thread;
 
 //modified by css
+- (BOOL)isACKMessage;
 - (BOOL)isNormalMessage;
 - (BOOL)isChatMessage;
 - (BOOL)isChatMessageWithBody;
