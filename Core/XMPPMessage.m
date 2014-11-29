@@ -237,6 +237,11 @@
 	return [[[self attributeForName:@"type"] stringValue] isEqualToString:@"chat"];
 }
 
+- (BOOL)isACKMessage
+{
+	return [[[self attributeForName:@"type"] stringValue] isEqualToString:@"received"];
+}
+
 - (BOOL)isChatMessageWithBody
 {
 	if ([self isChatMessage])
