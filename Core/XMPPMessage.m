@@ -237,21 +237,6 @@
    return [[[self attributeForName:@"type"] stringValue] isEqualToString:@"normal"];
 }
 
-- (BOOL)isGroupChatMessage
-{
-	return [[[self attributeForName:@"type"] stringValue] isEqualToString:@"groupchat"];
-}
-
-- (BOOL)isGroupChatMessageWithBody
-{
-	if ([self isGroupChatMessage])
-	{
-		return [self isMessageWithBody];
-	}
-	
-	return NO;
-}
-
 - (BOOL)isChatMessage
 {
 	return [[[self attributeForName:@"type"] stringValue] isEqualToString:@"chat"];

@@ -48,8 +48,6 @@
 //modified by css
 - (BOOL)isACKMessage;
 - (BOOL)isNormalMessage;
-- (BOOL)isGroupChatMessage;
-- (BOOL)isGroupChatMessageWithBody;
 - (BOOL)isChatMessage;
 - (BOOL)isChatMessageWithBody;
 - (BOOL)isErrorMessage;
