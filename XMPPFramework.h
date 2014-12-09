@@ -1,5 +1,9 @@
 #import "XMPP.h"
 
+#ifdef HAVE_XMPP_SUBSPEC_XEP_0045
+#import "XMPPMessage+XEP0045.h"
+#endif
+
 #ifdef HAVE_XMPP_SUBSPEC_BANDWIDTHMONITOR
 #import "XMPPBandwidthMonitor.h"
 #endif
