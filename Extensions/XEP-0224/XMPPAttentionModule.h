@@ -1,5 +1,5 @@
 #import "XMPPModule.h"
-#import "XMPPMessage+XEP_0224.h"
+#import "XMPPMessage+XEP0224.h"
 
 #define _XMPP_ATTENTION_MODULE_H
 
