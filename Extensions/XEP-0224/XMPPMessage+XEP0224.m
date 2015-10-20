@@ -1,7 +1,7 @@
-#import "XMPPMessage+XEP_0224.h"
+#import "XMPPMessage+XEP0224.h"
 #import "NSXMLElement+XMPP.h"
 
-@implementation XMPPMessage (XEP_0224)
+@implementation XMPPMessage (XEP0224)
 
 - (BOOL)isHeadLineMessage {
     return [[[self attributeForName:@"type"] stringValue] isEqualToString:@"headline"];

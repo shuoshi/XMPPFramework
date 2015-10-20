@@ -52,6 +52,7 @@
 - (BOOL)isChatMessageWithBody;
 - (BOOL)isErrorMessage;
 - (BOOL)isMessageWithBody;
+- (BOOL)isFeedbackMessage;
 
 - (NSError *)errorMessage;
 

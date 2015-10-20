@@ -275,4 +275,9 @@
 	return ([self elementForName:@"body"] != nil);
 }
 
+- (BOOL)isFeedbackMessage
+{
+    return [[[self attributeForName:@"type"] stringValue] isEqualToString:@"feedback"];
+}
+
 @end
